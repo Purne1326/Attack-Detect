@@ -565,10 +565,25 @@
               Feed raw network flow captures (.csv) into the Neural Autoencoder manifold for real-time zero-day reconstruction scoring &amp; MITRE ATT&amp;CK attribution.
             </p>
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="loadSampleCsvBatch()" class="px-5 py-2.5 rounded-full text-xs font-mono font-bold bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-indigo-500/25 hover:scale-105 transition flex items-center gap-2">
-              <i class="fa-solid fa-folder-open"></i> <span>Load Demo Evaluation Batch (120 Flows)</span>
-            </button>
+          <div class="flex items-center flex-wrap gap-2.5">
+            <div class="flex items-center gap-2 bg-slate-900/70 border border-white/10 rounded-2xl p-1.5 backdrop-blur-md shadow-lg shadow-black/20">
+              <label class="text-[10px] font-mono uppercase text-slate-400 pl-2 font-bold flex items-center gap-1.5">
+                <i class="fa-solid fa-network-wired text-cyan-400"></i> Capture Stream:
+              </label>
+              <select id="demo-capture-select" onchange="loadSampleCsvBatch(this.value)" class="bg-slate-950/90 text-xs font-mono font-medium text-slate-200 border border-white/10 rounded-xl px-3 py-1.5 focus:outline-none focus:border-cyan-400 cursor-pointer max-w-[260px] sm:max-w-none">
+                <option value="sensor_tap_eth0_20261118_1420.csv">sensor_tap_eth0_20261118_1420.csv (420 Flows • Eth0 Mirror)</option>
+                <option value="core_switch_trunk_vlan102.csv">core_switch_trunk_vlan102.csv (400 Flows • Core Trunk)</option>
+                <option value="gw_ingress_session_trace_08.csv">gw_ingress_session_trace_08.csv (380 Flows • Edge GW Ingress)</option>
+                <option value="datacenter_leaf2_span_port.csv">datacenter_leaf2_span_port.csv (350 Flows • Clean Fabric SPAN)</option>
+                <option value="perimeter_edge_mirror_batch_12.csv">perimeter_edge_mirror_batch_12.csv (410 Flows • IDS Sensor Tap)</option>
+                <option value="sdwan_branch_uplink_mon_04.csv">sdwan_branch_uplink_mon_04.csv (390 Flows • SD-WAN Uplink)</option>
+                <option value="cloud_vpc_flowlog_eni_7f9a.csv">cloud_vpc_flowlog_eni_7f9a.csv (430 Flows • Cloud VPC Mirror)</option>
+                <option value="corp_internal_seg_b_tap_03.csv">corp_internal_seg_b_tap_03.csv (380 Flows • Internal Seg B)</option>
+              </select>
+              <button onclick="loadSampleCsvBatch()" class="px-4 py-1.5 rounded-xl text-xs font-mono font-bold bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white shadow-md shadow-cyan-500/20 hover:scale-105 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-play text-[10px]"></i> <span>Run Ingestion</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -655,7 +670,7 @@
                     <i class="fa-solid fa-trophy"></i> Anomaly Classification Summary
                   </span>
                   <h3 class="text-sm font-display font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 mt-0.5">
-                    Card 1: Top 3 Network Anomalies in the CSV
+                    Top 3 Network Anomalies in the CSV
                   </h3>
                   <span class="text-[11px] text-slate-400 font-mono">Shows the distribution of detected attacks from the uploaded capture file.</span>
                 </div>
@@ -683,17 +698,17 @@
               <table class="w-full text-left text-xs font-mono">
                 <thead class="bg-slate-200/40 dark:bg-slate-900/60 text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-200 dark:border-white/10">
                   <tr>
-                    <th class="py-3 px-3">Flow ID</th>
-                    <th class="py-3 px-3">Loss Score</th>
-                    <th class="py-3 px-3">Ratio vs Cutoff</th>
-                    <th class="py-3 px-3">Dominant Anomaly Dimension</th>
-                    <th class="py-3 px-3">ATT&amp;CK Attribution</th>
-                    <th class="py-3 px-3">Policy Action</th>
-                    <th class="py-3 px-3 text-right">Interactive Deep Dive</th>
+                    <th class="py-3 px-3 whitespace-nowrap">Flow ID &amp; Type</th>
+                    <th class="py-3 px-3 whitespace-nowrap">Reconstruction Loss</th>
+                    <th class="py-3 px-3 whitespace-nowrap">ATT&amp;CK Attribution</th>
+                    <th class="py-3 px-4 min-w-[320px]">Why Flagged as Attack (Behavior &amp; Feature Deviations)</th>
+                    <th class="py-3 px-3 min-w-[200px]">Why Blocked (Policy Reason)</th>
+                    <th class="py-3 px-3 whitespace-nowrap">Action</th>
+                    <th class="py-3 px-3 text-right whitespace-nowrap">Deep Dive</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200/60 dark:divide-white/5" id="csv-flows-tbody">
-                  <!-- Dynamically populated -->
+                  <!-- Dynamically populated with detailed reasons -->
                 </tbody>
               </table>
             </div>
@@ -1002,7 +1017,7 @@
             </span>
             <span class="text-xs font-mono text-slate-400">Flow Lifecycle Inspection</span>
           </div>
-          <h2 class="text-xl font-display font-extrabold text-slate-800 dark:text-slate-100 mt-1">
+          <h2 class="text-xl font-display font-extrabold text-slate-800 dark:text-slate-100 mt-1" id="slowmo-modal-title">
             Zero-Day Packet Journey: Ingress to Post-Quantum Mitigation
           </h2>
         </div>
@@ -1063,7 +1078,7 @@
               <div class="relative w-full h-24 flex items-center justify-between px-6 bg-slate-900/60 rounded-xl overflow-hidden border border-white/5">
                 <!-- Source Node -->
                 <div class="flex flex-col items-center z-10">
-                  <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-sm shadow-[0_0_12px_rgba(244,63,94,0.4)]">
+                  <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-sm shadow-[0_0_12px_rgba(244,63,94,0.4)]" id="slowmo-src-icon">
                     <i class="fa-solid fa-skull"></i>
                   </div>
                   <span class="text-[10px] font-mono text-slate-400 mt-1" id="slowmo-src-ip">192.168.10.50</span>
@@ -1085,9 +1100,9 @@
               </div>
 
               <div class="text-xs font-mono text-slate-300 text-left w-full space-y-1">
-                <div class="flex justify-between"><span>Protocol / L4:</span> <strong class="text-amber-400">TCP (Port 80 HTTP Flood)</strong></div>
-                <div class="flex justify-between"><span>Normalized Features:</span> <strong class="text-cyan-400">79 Dimensions Extracted</strong></div>
-                <div class="flex justify-between"><span>Traditional Signature Firewall:</span> <strong class="text-rose-400">BYPASSED (No CVE Matches)</strong></div>
+                <div class="flex justify-between"><span>Protocol / L4:</span> <strong class="text-amber-400" id="slowmo-proto-l4">TCP (Port 80 HTTP Flood)</strong></div>
+                <div class="flex justify-between"><span>Normalized Features:</span> <strong class="text-cyan-400" id="slowmo-dims">79 Dimensions Extracted</strong></div>
+                <div class="flex justify-between"><span>Static Signature Firewall:</span> <strong class="text-rose-400 font-bold" id="slowmo-fw-status">BYPASSED (No CVE Matches)</strong></div>
               </div>
             </div>
 
@@ -1104,7 +1119,7 @@
                   <div class="font-bold text-rose-400" id="slowmo-pkt-ratio">4,820 : 0 (Asymmetric)</div>
                 </div>
                 <div class="p-2.5 rounded-xl bg-slate-900/60 border border-white/5 space-y-1">
-                  <span class="text-slate-400">SYN / ACK Flags:</span>
+                  <span class="text-slate-400">TCP Control Flags:</span>
                   <div class="font-bold text-amber-400" id="slowmo-flags">SYN=1, ACK=0, FIN=0</div>
                 </div>
                 <div class="p-2.5 rounded-xl bg-slate-900/60 border border-white/5 space-y-1">
@@ -1112,7 +1127,7 @@
                   <div class="font-bold text-cyan-400" id="slowmo-rate">38,870 Packets/s</div>
                 </div>
               </div>
-              <div class="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20 text-slate-300 text-[11px] font-sans">
+              <div class="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20 text-slate-300 text-[11px] font-sans" id="slowmo-trad-fw-box">
                 <strong>Why traditional firewalls fail:</strong> This flow contains zero known malware signatures or shellcode payloads. It is a stateful resource exhaustion zero-day designed to overwhelm TCP backlog queues.
               </div>
             </div>
@@ -1123,7 +1138,7 @@
         <div id="slowmo-pane-2" class="hidden space-y-5 animate-in fade-in duration-300">
           <div class="flex items-center justify-between">
             <span class="text-xs font-mono uppercase text-indigo-400 font-bold flex items-center gap-1.5">
-              <i class="fa-solid fa-brain text-indigo-400"></i> Deep Autoencoder Manifold Compression (68D &rarr; 16D)
+              <i class="fa-solid fa-brain text-indigo-400"></i> Deep Autoencoder Manifold Compression (79D &rarr; 16D Bottleneck)
             </span>
             <span class="text-xs font-mono text-rose-400 font-bold" id="slowmo-loss-status">RECONSTRUCTION FAILED</span>
           </div>
@@ -1132,9 +1147,9 @@
             <!-- Neural Architecture Diagram -->
             <div class="p-6 rounded-2xl crystal-card border border-indigo-500/30 space-y-4">
               <div class="text-xs font-mono text-slate-400 flex justify-between">
-                <span>Input: 68 Dims</span>
+                <span>Input: 79 Dims</span>
                 <span class="text-blue-400 font-bold">16-D Bottleneck</span>
-                <span>Output: 68 Dims</span>
+                <span>Output: 79 Dims</span>
               </div>
               
               <!-- Bottleneck graphic -->
@@ -1168,11 +1183,11 @@
                   <strong class="text-rose-400 text-sm" id="slowmo-loss-val">0.08942</strong>
                 </div>
                 <div class="flex justify-between text-[11px]">
-                  <span class="text-slate-500">Learned Cutoff (99th %ile):</span>
-                  <span class="text-slate-300">0.03443</span>
+                  <span class="text-slate-500">Learned Baseline Cutoff (&tau;<sub>95</sub>):</span>
+                  <span class="text-slate-300 font-bold" id="slowmo-cutoff-val">0.00996</span>
                 </div>
                 <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mt-1">
-                  <div class="bg-gradient-to-r from-amber-400 to-rose-500 h-full rounded-full" style="width: 88%"></div>
+                  <div id="slowmo-loss-bar" class="bg-gradient-to-r from-amber-400 to-rose-500 h-full rounded-full transition-all duration-500" style="width: 88%"></div>
                 </div>
               </div>
             </div>
@@ -1183,8 +1198,8 @@
               <div class="space-y-2.5" id="slowmo-residuals-container">
                 <!-- Dynamically populated residual bars -->
               </div>
-              <div class="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-slate-300 text-[11px] font-sans">
-                <strong>Zero-Day Heuristic:</strong> The autoencoder was trained purely on benign network patterns. Because it cannot compress or reconstruct these deviant dimensions, it flags this zero-day flow with 99.4% confidence.
+              <div class="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-slate-300 text-[11px] font-sans" id="slowmo-heuristic-note">
+                <strong>Zero-Day Heuristic:</strong> The autoencoder was trained purely on benign network patterns. Because it cannot compress or reconstruct these deviant dimensions, it flags this flow with high confidence.
               </div>
             </div>
           </div>
@@ -1214,16 +1229,8 @@
             </div>
 
             <!-- Synthesis Badges -->
-            <div class="flex flex-wrap items-center gap-2 text-xs font-mono pt-1">
-              <span class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold">
-                Asymmetric TCP SYN Flood
-              </span>
-              <span class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold">
-                Zero Return ACKs
-              </span>
-              <span class="px-3 py-1 rounded-full bg-violet-500/20 text-violet-400 border border-violet-500/30 font-bold">
-                Extreme Forward Frequency (+12.8σ)
-              </span>
+            <div class="flex flex-wrap items-center gap-2 text-xs font-mono pt-1" id="slowmo-badges-container">
+              <!-- Dynamically populated tags -->
             </div>
           </div>
         </div>
@@ -1250,47 +1257,25 @@
                 <div class="absolute inset-y-0 w-px bg-violet-500/30"></div>
                 <!-- Sweeping Radar Line -->
                 <div class="absolute inset-0 origin-center bg-gradient-to-tr from-transparent via-violet-500/20 to-violet-400/40 rounded-full animate-spin" style="animation-duration: 3s"></div>
-                <!-- Target Blip -->
-                <div class="absolute top-12 right-14 w-4 h-4 rounded-full bg-rose-500 shadow-[0_0_16px_#f43f5e] animate-ping"></div>
-                <div class="absolute top-12 right-14 w-4 h-4 rounded-full bg-rose-500 flex items-center justify-center text-[8px] text-white font-bold">!</div>
+                <!-- Dynamic Target Blips Container -->
+                <div id="slowmo-radar-blips" class="absolute inset-0 pointer-events-none"></div>
               </div>
               <div class="text-center font-mono text-xs">
                 <span class="text-slate-400">Radar Lock:</span>
                 <strong class="text-violet-400 block text-sm mt-0.5" id="slowmo-radar-lock">T1498: Network Denial of Service</strong>
+                <div id="slowmo-radar-match" class="text-xs font-mono text-cyan-400 mt-0.5">91.2% Match</div>
               </div>
             </div>
 
             <!-- ATT&CK Matrix Card -->
             <div class="p-6 rounded-2xl crystal-inset border border-white/10 space-y-3 font-mono text-xs">
               <span class="text-[10px] uppercase text-slate-400 font-bold tracking-wider">Semantic Cosine Similarity Attribution:</span>
-              <div class="space-y-3">
-                <div class="p-3 rounded-xl bg-violet-500/15 border border-violet-500/30 space-y-1">
-                  <div class="flex justify-between font-bold text-slate-200">
-                    <span class="text-violet-400">1. T1498 (Network Denial of Service)</span>
-                    <span class="text-blue-400 font-bold">91.2% Match</span>
-                  </div>
-                  <div class="text-[11px] text-slate-400 font-sans">
-                    Adversaries may perform Network Denial of Service (DoS) attacks to degrade or block availability of intended network services.
-                  </div>
-                </div>
-
-                <div class="p-3 rounded-xl bg-slate-900/60 border border-white/5 space-y-1">
-                  <div class="flex justify-between text-slate-300">
-                    <span>2. T1046 (Network Service Discovery)</span>
-                    <span class="text-slate-400">34.1% Match</span>
-                  </div>
-                </div>
-
-                <div class="p-3 rounded-xl bg-slate-900/60 border border-white/5 space-y-1">
-                  <div class="flex justify-between text-slate-300">
-                    <span>3. T1110 (Brute Force Authentication)</span>
-                    <span class="text-slate-400">12.5% Match</span>
-                  </div>
-                </div>
+              <div class="space-y-3" id="slowmo-techniques-container">
+                <!-- Dynamically populated technique cards -->
               </div>
 
               <div class="p-3 bg-violet-500/10 rounded-xl border border-violet-500/20 text-slate-300 text-[11px] font-sans">
-                <strong>Automated Escalation Rule:</strong> Similarity &ge; 0.85 and reconstruction loss &ge; 1.5x cutoff triggers immediate Level-1 Autonomous Quarantine and Block.
+                <strong>Autonomous Policy Gating:</strong> Similarity &ge; 0.05 and reconstruction loss &ge; 1.3x cutoff triggers immediate Level-1 Autonomous Quarantine and Drop.
               </div>
             </div>
           </div>
@@ -1316,7 +1301,7 @@
               </div>
 
               <div class="space-y-1">
-                <div class="px-4 py-1.5 rounded-full text-xs font-mono font-bold uppercase bg-rose-500/20 text-rose-400 border border-rose-500/40 inline-block shadow-lg">
+                <div id="slowmo-action-badge" class="px-4 py-1.5 rounded-full text-xs font-mono font-bold uppercase bg-rose-500/20 text-rose-400 border border-rose-500/40 inline-block shadow-lg">
                   FIREWALL ACTION: BLOCK (DROP)
                 </div>
                 <p class="text-xs font-mono text-slate-300 pt-1">
@@ -1349,7 +1334,7 @@
                 </div>
               </div>
 
-              <div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-slate-300 text-[11px] font-sans">
+              <div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-slate-300 text-[11px] font-sans" id="slowmo-enforce-note">
                 <strong>Fail-Closed Security Guarantee:</strong> If the alert signature fails verification, the firewall immediately drops the control update to prevent spoofed ALLOW rules.
               </div>
             </div>
@@ -2092,61 +2077,305 @@ END OF INCIDENT REPORT
       if (flow && flow.flow_id) {
         currentSlowMoFlow = flow;
       } else if (lastInjectedFlow) {
-        currentSlowMoFlow = {
-          flow_id: lastInjectedFlow.flow_id || 49102,
-          score: lastInjectedFlow.score || 0.08942,
-          threshold: lastInjectedFlow.threshold || 0.03443,
-          is_anomaly: lastInjectedFlow.is_anomaly !== false,
-          true_label: lastInjectedFlow.true_label || 'RedTeam-Injection',
-          action: lastInjectedFlow.action || 'BLOCK',
-          src_ip: `192.168.10.${(lastInjectedFlow.flow_id % 150) + 10}`,
-          reason: lastInjectedFlow.reason || 'Anomalous deviation beyond baseline',
-          top_features: lastInjectedFlow.top_features || DEFAULT_SLOWMO_FLOW.top_features,
-          explanation_text: lastInjectedFlow.explanation_text || DEFAULT_SLOWMO_FLOW.explanation_text,
-          top_technique: lastInjectedFlow.top_technique || DEFAULT_SLOWMO_FLOW.top_technique,
-          pqc_bytes: 3981
-        };
+        currentSlowMoFlow = lastInjectedFlow;
       } else {
         currentSlowMoFlow = DEFAULT_SLOWMO_FLOW;
       }
 
-      // Populate flow specific fields
-      const srcIp = currentSlowMoFlow.src_ip || `192.168.10.${(currentSlowMoFlow.flow_id % 150) + 10}`;
+      const f = currentSlowMoFlow;
+      const isAttack = (f.action === 'BLOCK' || f.is_anomaly || (f.true_label && f.true_label.toUpperCase() !== 'BENIGN'));
+      const isAllow = (f.action === 'ALLOW');
+
+      // Title
+      const titleEl = document.getElementById('slowmo-modal-title');
+      if (titleEl) {
+        titleEl.innerHTML = `Packet Journey: <span class="text-cyan-400">#${f.flow_id}</span> &bull; <span class="${isAttack ? 'text-rose-400' : 'text-emerald-400'}">${f.true_label}</span>`;
+      }
+
+      // Pane 1: Wire Ingress
+      const srcIp = f.src_ip || `192.168.10.${(f.flow_id % 140) + 45}`;
       const srcEl = document.getElementById('slowmo-src-ip');
       if (srcEl) srcEl.textContent = srcIp;
 
+      const srcIcon = document.getElementById('slowmo-src-icon');
+      if (srcIcon) {
+        srcIcon.className = `w-10 h-10 rounded-xl ${isAttack ? 'bg-rose-500/20 text-rose-400 shadow-[0_0_12px_rgba(244,63,94,0.4)]' : 'bg-emerald-500/20 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.4)]'} flex items-center justify-center font-bold text-sm`;
+        srcIcon.innerHTML = isAttack ? '<i class="fa-solid fa-skull"></i>' : '<i class="fa-solid fa-laptop"></i>';
+      }
+
+      const protoEl = document.getElementById('slowmo-proto-l4');
+      if (protoEl) {
+        protoEl.textContent = `${f.protocol || 'TCP'} (Port ${f.dest_port || 80} • ${f.service_name || 'Standard Network Service'})`;
+      }
+
+      const durEl = document.getElementById('slowmo-duration');
+      if (durEl) durEl.textContent = f.flow_duration_str || '124.8 µs';
+
+      const pktRatioEl = document.getElementById('slowmo-pkt-ratio');
+      if (pktRatioEl) {
+        const fwd = f.fwd_packets !== undefined ? f.fwd_packets : 1;
+        const bwd = f.bwd_packets !== undefined ? f.bwd_packets : 0;
+        pktRatioEl.textContent = `${fwd.toLocaleString()} Fwd : ${bwd.toLocaleString()} Bwd (${bwd === 0 ? 'Asymmetric Direct' : 'Bidirectional'})`;
+        pktRatioEl.className = `font-bold ${bwd === 0 ? 'text-rose-400' : 'text-emerald-400'}`;
+      }
+
+      const flagsEl = document.getElementById('slowmo-flags');
+      if (flagsEl) {
+        flagsEl.textContent = `SYN=${f.syn_flags || 0}, ACK=${f.ack_flags || 0}, FIN=${f.fin_flags || 0}, PSH=${f.psh_flags || 0}`;
+      }
+
+      const rateEl = document.getElementById('slowmo-rate');
+      if (rateEl) {
+        const pr = (f.packet_rate !== undefined && f.packet_rate !== null) ? Math.round(f.packet_rate).toLocaleString() : '12,450';
+        const br = (f.byte_rate !== undefined && f.byte_rate !== null) ? Math.round(f.byte_rate / 1024).toLocaleString() : '840';
+        rateEl.textContent = `${pr} Packets/s (${br} KB/s)`;
+      }
+
+      const fwStatusEl = document.getElementById('slowmo-fw-status');
+      if (fwStatusEl) {
+        if (isAttack) {
+          fwStatusEl.textContent = 'BYPASSED (No Static CVE Signature)';
+          fwStatusEl.className = 'text-rose-400 font-bold';
+        } else {
+          fwStatusEl.textContent = 'CONFORMANT (Standard RFC Exchange)';
+          fwStatusEl.className = 'text-emerald-400 font-bold';
+        }
+      }
+
+      const tradFwBox = document.getElementById('slowmo-trad-fw-box');
+      if (tradFwBox) {
+        if (isAttack) {
+          tradFwBox.className = 'p-3 bg-rose-500/10 rounded-xl border border-rose-500/20 text-slate-300 text-[11px] font-sans';
+          tradFwBox.innerHTML = `<strong>Why traditional firewalls fail:</strong> This ${f.true_label} flow carries zero known malware shellcode or fixed payload signatures. Traditional perimeter firewalls pass it blindly; only dimensional Autoencoder manifold reconstruction catches the behavioral deviation.`;
+        } else {
+          tradFwBox.className = 'p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-slate-300 text-[11px] font-sans';
+          tradFwBox.innerHTML = `<strong>Baseline Telemetry:</strong> Connection follows expected enterprise distribution parameters with normal handshake states and balanced throughput. Fast-path routing authorized.`;
+        }
+      }
+
+      // Pane 2: Autoencoder Manifold & Residuals
+      const cutoff = f.threshold || 0.00996;
+      const score = (f.score !== undefined) ? f.score : 0.001;
+      const lossStatusEl = document.getElementById('slowmo-loss-status');
+      if (lossStatusEl) {
+        if (isAllow) {
+          lossStatusEl.textContent = 'MANIFOLD CONFORMANT (CLEAN BASELINE)';
+          lossStatusEl.className = 'text-xs font-mono text-emerald-400 font-bold';
+        } else if (f.action === 'MONITOR') {
+          lossStatusEl.textContent = 'BORDERLINE MANIFOLD DRIFT (SOC REVIEW)';
+          lossStatusEl.className = 'text-xs font-mono text-amber-400 font-bold';
+        } else {
+          lossStatusEl.textContent = 'RECONSTRUCTION FAILED (ANOMALY DETECTED)';
+          lossStatusEl.className = 'text-xs font-mono text-rose-400 font-bold';
+        }
+      }
+
       const lossEl = document.getElementById('slowmo-loss-val');
-      if (lossEl) lossEl.textContent = currentSlowMoFlow.score.toFixed(5);
+      if (lossEl) {
+        lossEl.textContent = score.toFixed(5);
+        lossEl.className = `text-sm font-bold ${isAllow ? 'text-emerald-400' : 'text-rose-400'}`;
+      }
 
-      const netshEl = document.getElementById('slowmo-netsh-rule');
-      if (netshEl) netshEl.textContent = `netsh advfirewall firewall add rule name="AE-DROP-${currentSlowMoFlow.flow_id}" dir=in action=block remoteip=${srcIp}`;
+      const cutoffEl = document.getElementById('slowmo-cutoff-val');
+      if (cutoffEl) cutoffEl.textContent = cutoff.toFixed(5);
 
-      const iptablesEl = document.getElementById('slowmo-iptables-rule');
-      if (iptablesEl) iptablesEl.textContent = `iptables -A INPUT -s ${srcIp} -j DROP`;
+      const lossBar = document.getElementById('slowmo-loss-bar');
+      if (lossBar) {
+        const ratio = Math.min(100, Math.max(8, (score / (cutoff * 2.5)) * 100));
+        lossBar.style.width = `${ratio}%`;
+        lossBar.className = isAllow
+          ? 'bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500'
+          : 'bg-gradient-to-r from-amber-400 to-rose-500 h-full rounded-full transition-all duration-500';
+      }
 
-      // Fill residuals
       const resContainer = document.getElementById('slowmo-residuals-container');
       if (resContainer) {
         resContainer.innerHTML = '';
-        const feats = currentSlowMoFlow.top_features && currentSlowMoFlow.top_features.length > 0
-          ? currentSlowMoFlow.top_features
-          : DEFAULT_SLOWMO_FLOW.top_features;
+        const feats = (f.top_features && f.top_features.length > 0)
+          ? f.top_features
+          : (isAllow ? [['Flow Duration Normalcy', 0.1], ['Packet Header Integrity', 0.05]] : DEFAULT_SLOWMO_FLOW.top_features);
 
         feats.forEach(([name, zscore]) => {
-          const pct = Math.min(100, Math.round((zscore / 15) * 100));
+          const zNum = typeof zscore === 'number' ? zscore : parseFloat(zscore) || 0.2;
+          const pct = Math.min(100, Math.max(10, Math.round((zNum / 10) * 100)));
           const row = document.createElement('div');
           row.className = 'space-y-1';
           row.innerHTML = `
             <div class="flex justify-between text-[11px]">
               <span class="text-slate-300 font-bold">${name}</span>
-              <span class="text-rose-400 font-bold">+${zscore.toFixed(2)} σ</span>
+              <span class="${isAllow ? 'text-emerald-400' : 'text-rose-400'} font-bold">+${zNum.toFixed(2)} σ</span>
             </div>
             <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-              <div class="bg-gradient-to-r from-blue-600 via-indigo-500 to-rose-500 h-full rounded-full" style="width: ${pct}%"></div>
+              <div class="${isAllow ? 'bg-gradient-to-r from-emerald-600 to-teal-400' : 'bg-gradient-to-r from-blue-600 via-indigo-500 to-rose-500'} h-full rounded-full" style="width: ${pct}%"></div>
             </div>
           `;
           resContainer.appendChild(row);
         });
+      }
+
+      const heurNote = document.getElementById('slowmo-heuristic-note');
+      if (heurNote) {
+        if (isAllow) {
+          heurNote.className = 'p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-slate-300 text-[11px] font-sans';
+          heurNote.innerHTML = `<strong>Autoencoder Reconstruction Passed:</strong> Flow compressed into 16-D bottleneck and recovered with reconstruction loss ${score.toFixed(5)} &lt; threshold ${cutoff.toFixed(5)}. Traffic authorized.`;
+        } else {
+          heurNote.className = 'p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-slate-300 text-[11px] font-sans';
+          heurNote.innerHTML = `<strong>Zero-Day Heuristic:</strong> The autoencoder was trained purely on benign network patterns. Because it cannot compress or reconstruct these deviant dimensions, it flags this ${f.true_label} flow with deterministic confidence.`;
+        }
+      }
+
+      // Pane 3: Synthesis Badges
+      const badgesBox = document.getElementById('slowmo-badges-container');
+      if (badgesBox) {
+        badgesBox.innerHTML = '';
+        const feats = (f.top_features && f.top_features.length > 0)
+          ? f.top_features
+          : (isAllow ? [['RFC Baseline Conformance', 0.1]] : [['Anomalous Metric Drift', 3.5]]);
+
+        feats.slice(0, 3).forEach(([name, zscore]) => {
+          const zNum = typeof zscore === 'number' ? zscore : parseFloat(zscore) || 0.1;
+          const badge = document.createElement('span');
+          badge.className = `px-3 py-1 rounded-full text-xs font-mono font-bold border ${isAllow ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border-rose-500/30'}`;
+          badge.textContent = `${name} (+${zNum.toFixed(1)}σ)`;
+          badgesBox.appendChild(badge);
+        });
+      }
+
+      // Pane 4: ATT&CK Radar Lock & Dynamic Spread Blips
+      const topTech = f.top_technique || (f.techniques && f.techniques[0]) || { technique_id: 'T1498', name: 'Network Denial of Service', similarity: 0.85 };
+      const radarLockEl = document.getElementById('slowmo-radar-lock');
+      if (radarLockEl) radarLockEl.textContent = `${topTech.technique_id}: ${topTech.name}`;
+
+      const radarMatchEl = document.getElementById('slowmo-radar-match');
+      if (radarMatchEl) {
+        const simPct = (topTech.similarity ? topTech.similarity * 100 : 85).toFixed(1);
+        radarMatchEl.textContent = `${simPct}% Match`;
+      }
+
+      // Dynamic Radar Blips Spread Across Coordinate Manifold
+      const blipsBox = document.getElementById('slowmo-radar-blips');
+      if (blipsBox) {
+        blipsBox.innerHTML = '';
+
+        // Determine base direction angle based on technique category & unique flow ID
+        let baseAngle = 45;
+        const tid = (topTech.technique_id || '').toUpperCase();
+        const fid = f.flow_id || 800000;
+        
+        if (tid.includes('1498') || tid.includes('1499') || tid.includes('DOS')) {
+          baseAngle = 25 + ((fid * 17) % 65); // Quadrant 1 (NE)
+        } else if (tid.includes('1046') || tid.includes('1595') || tid.includes('SCAN')) {
+          baseAngle = 115 + ((fid * 19) % 65); // Quadrant 2 (NW)
+        } else if (tid.includes('1071') || tid.includes('1030')) {
+          baseAngle = 205 + ((fid * 23) % 65); // Quadrant 3 (SW)
+        } else if (tid.includes('1190') || tid.includes('1110')) {
+          baseAngle = 295 + ((fid * 29) % 65); // Quadrant 4 (SE)
+        } else {
+          baseAngle = (fid * 37) % 360;
+        }
+
+        // Distance from radar center (w-48 h-48 = 192px total, radius 96px)
+        const dist = 32 + ((fid * 13) % 42); // 32px to 74px from center
+        const rad = (baseAngle * Math.PI) / 180;
+        const x = Math.round(96 + dist * Math.cos(rad) - 9);
+        const y = Math.round(96 + dist * Math.sin(rad) - 9);
+
+        const blipColor = isAllow ? 'bg-emerald-500' : 'bg-rose-500';
+        const shadowColor = isAllow ? 'rgba(16,185,129,0.8)' : 'rgba(244,63,94,0.8)';
+        const blipSymbol = isAllow ? '✓' : '!';
+
+        // 1. Primary Locked Blip
+        blipsBox.innerHTML += `
+          <div class="absolute w-4 h-4 rounded-full ${blipColor} animate-ping" style="left: ${x}px; top: ${y}px; box-shadow: 0 0 16px ${shadowColor};"></div>
+          <div class="absolute w-4 h-4 rounded-full ${blipColor} flex items-center justify-center text-[9px] text-white font-extrabold shadow-lg" style="left: ${x}px; top: ${y}px;">
+            ${blipSymbol}
+          </div>
+        `;
+
+        // 2. Secondary Candidate Blips (spread in adjacent angular sectors)
+        if (f.techniques && f.techniques.length > 1) {
+          f.techniques.slice(1, 3).forEach((secTech, sIdx) => {
+            const secAngle = (baseAngle + (sIdx === 0 ? 80 : -75) + ((fid * 7) % 35)) % 360;
+            const secDist = 38 + ((fid * (sIdx + 5)) % 36);
+            const secRad = (secAngle * Math.PI) / 180;
+            const sx = Math.round(96 + secDist * Math.cos(secRad) - 6);
+            const sy = Math.round(96 + secDist * Math.sin(secRad) - 6);
+
+            blipsBox.innerHTML += `
+              <div class="absolute w-3.5 h-3.5 rounded-full bg-violet-500/80 border border-violet-300/60 flex items-center justify-center text-[8px] text-white font-bold" style="left: ${sx}px; top: ${sy}px; box-shadow: 0 0 8px rgba(167,139,250,0.7);" title="${secTech.technique_id} (${secTech.name})">
+                ${sIdx + 2}
+              </div>
+            `;
+          });
+        }
+      }
+
+      const techContainer = document.getElementById('slowmo-techniques-container');
+      if (techContainer) {
+        techContainer.innerHTML = '';
+        const techList = (f.techniques && f.techniques.length > 0) ? f.techniques : [topTech];
+        techList.forEach((t, i) => {
+          const simPct = (t.similarity ? t.similarity * 100 : 75).toFixed(1);
+          const isTop = (i === 0);
+          const card = document.createElement('div');
+          card.className = isTop
+            ? 'p-3 rounded-xl bg-violet-500/15 border border-violet-500/30 space-y-1'
+            : 'p-3 rounded-xl bg-slate-900/60 border border-white/5 space-y-1';
+          card.innerHTML = `
+            <div class="flex justify-between font-bold text-slate-200 text-xs">
+              <span class="${isTop ? 'text-violet-400' : 'text-slate-300'}">${i + 1}. ${t.technique_id} (${t.name})</span>
+              <span class="${isTop ? 'text-blue-400 font-bold' : 'text-slate-400'}">${simPct}% Match</span>
+            </div>
+            <div class="text-[11px] text-slate-400 font-sans leading-tight">
+              ${t.description || 'Adversary behavior correlated via cosine vector similarity over MITRE ATT&CK Enterprise matrix.'}
+            </div>
+          `;
+          techContainer.appendChild(card);
+        });
+      }
+
+      // Pane 5: Shield Slam & Firewall Enforcement
+      const actBadge = document.getElementById('slowmo-action-badge');
+      if (actBadge) {
+        if (isAllow) {
+          actBadge.className = 'px-4 py-1.5 rounded-full text-xs font-mono font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 inline-block shadow-lg';
+          actBadge.textContent = 'FIREWALL ACTION: ALLOW (FAST-PATH)';
+        } else if (f.action === 'MONITOR') {
+          actBadge.className = 'px-4 py-1.5 rounded-full text-xs font-mono font-bold uppercase bg-amber-500/20 text-amber-400 border border-amber-500/40 inline-block shadow-lg';
+          actBadge.textContent = 'FIREWALL ACTION: MONITOR (QUARANTINE)';
+        } else {
+          actBadge.className = 'px-4 py-1.5 rounded-full text-xs font-mono font-bold uppercase bg-rose-500/20 text-rose-400 border border-rose-500/40 inline-block shadow-lg';
+          actBadge.textContent = 'FIREWALL ACTION: BLOCK (DROP)';
+        }
+      }
+
+      const netshEl = document.getElementById('slowmo-netsh-rule');
+      if (netshEl) {
+        if (isAllow) {
+          netshEl.textContent = `# Fast-Path Authorized — No drop rule committed for ${srcIp}`;
+        } else {
+          netshEl.textContent = `netsh advfirewall firewall add rule name="AD-BLOCK-${f.flow_id}" dir=in action=block remoteip=${srcIp}`;
+        }
+      }
+
+      const iptablesEl = document.getElementById('slowmo-iptables-rule');
+      if (iptablesEl) {
+        if (isAllow) {
+          iptablesEl.textContent = `# Netfilter Fast-Path: Traffic authorized from ${srcIp}`;
+        } else {
+          iptablesEl.textContent = `iptables -A INPUT -s ${srcIp} -j DROP`;
+        }
+      }
+
+      const enforceNote = document.getElementById('slowmo-enforce-note');
+      if (enforceNote) {
+        if (isAllow) {
+          enforceNote.className = 'p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-slate-300 text-[11px] font-sans';
+          enforceNote.innerHTML = `<strong>Zero-Disruption Fast-Path Active:</strong> Normal verified traffic flows unimpeded through edge interfaces without latency penalty.`;
+        } else {
+          enforceNote.className = 'p-3 bg-rose-500/10 rounded-xl border border-rose-500/20 text-slate-300 text-[11px] font-sans';
+          enforceNote.innerHTML = `<strong>Autonomous Netfilter Enforcement:</strong> Edge gateway committed hardware drop rules for ${srcIp}. Alert signed with ML-DSA-65 post-quantum signature.`;
+        }
       }
 
       currentSlowMoStep = 1;
@@ -2306,6 +2535,23 @@ END OF INCIDENT REPORT
           handleCsvFileSelected(files[0]);
         }
       }, false);
+
+      // Fetch dynamic demo captures list from server
+      fetch('/api/demo_captures')
+        .then(res => res.json())
+        .then(captures => {
+          const select = document.getElementById('demo-capture-select');
+          if (select && captures && captures.length > 0) {
+            select.innerHTML = '';
+            captures.forEach(c => {
+              const opt = document.createElement('option');
+              opt.value = c.filename;
+              opt.textContent = `${c.filename} (${c.size_kb} KB)`;
+              select.appendChild(opt);
+            });
+          }
+        })
+        .catch(err => console.error('Error fetching demo captures:', err));
     }
 
     async function handleCsvFileSelected(file) {
@@ -2319,8 +2565,16 @@ END OF INCIDENT REPORT
       await executeCsvAnalysis(formData);
     }
 
-    async function loadSampleCsvBatch() {
-      await executeCsvAnalysis(null);
+    async function loadSampleCsvBatch(sampleFilename = null) {
+      if (!sampleFilename) {
+        const select = document.getElementById('demo-capture-select');
+        if (select) sampleFilename = select.value;
+      }
+      const formData = new FormData();
+      if (sampleFilename) {
+        formData.append('sample', sampleFilename);
+      }
+      await executeCsvAnalysis(formData);
     }
 
     async function executeCsvAnalysis(formData = null) {
@@ -2469,25 +2723,115 @@ END OF INCIDENT REPORT
 
       flows.forEach(flow => {
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-100/50 dark:hover:bg-white/5 transition';
+        tr.className = 'hover:bg-slate-100/50 dark:hover:bg-white/5 transition border-b border-slate-200/50 dark:border-white/5';
 
-        const ratio = (flow.score / (flow.threshold || 0.03443)).toFixed(1);
-        const topFeat = (flow.top_features && flow.top_features[0]) ? flow.top_features[0][0] : 'N/A';
-        const techId = flow.top_technique ? (flow.top_technique.technique_id || 'T1498') : 'T1498';
-        const action = flow.action || 'BLOCK';
-
+        const cutoff = flow.threshold || 0.00996;
+        const ratio = (flow.score / cutoff).toFixed(1);
+        const action = flow.action || (flow.score >= cutoff * 1.3 ? 'BLOCK' : (flow.score >= cutoff ? 'MONITOR' : 'ALLOW'));
         const badgeClass = action === 'BLOCK' ? 'badge-block' : (action === 'MONITOR' ? 'badge-monitor' : 'badge-allow');
+        const scoreColorClass = action === 'BLOCK' ? 'text-rose-500' : (action === 'MONITOR' ? 'text-amber-500' : 'text-emerald-500');
+
+        // Ground truth label styling: attacks are always ROSE/RED; clean benign is always EMERALD/GREEN
+        const rawLabel = (flow.true_label || (flow.is_anomaly ? 'ATTACK' : 'BENIGN')).trim();
+        const isBenignLabel = rawLabel.toUpperCase() === 'BENIGN';
+        const labelBadgeClass = isBenignLabel
+          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+          : 'bg-rose-500/15 text-rose-400 border border-rose-500/30';
+
+        // Technique details
+        const tech = flow.top_technique || (flow.techniques && flow.techniques[0]) || { technique_id: 'T1498', name: 'Network Denial of Service', similarity: 0.85 };
+        const techId = tech.technique_id || 'T1498';
+        const techName = tech.name || 'Network Attack';
+        const similarity = typeof tech.similarity === 'number' ? tech.similarity.toFixed(3) : '0.850';
+
+        // Plain English explanation text
+        let expText = flow.explanation_text || "";
+        if (!expText || expText === "Model residual decomposition completed.") {
+          const lbl = rawLabel.toUpperCase();
+          if (lbl.includes('DDOS') || lbl.includes('DOS')) {
+            expText = "Massive forward packet transmission frequency; socket flood exhaustion with zero real data.";
+          } else if (lbl.includes('PORT') || lbl.includes('SCAN')) {
+            expText = "Rapid sequence of 1-packet probe bursts across destination ports triggering closed-port RST resets.";
+          } else if (flow.is_anomaly) {
+            expText = "Abnormally high packet lengths and irregular connection duration deviating from benign baseline manifold.";
+          } else {
+            expText = "Standard client-server TCP exchange well within benign baseline manifold.";
+          }
+        }
+
+        // Top features tags with z-scores
+        const featureChips = (flow.top_features && flow.top_features.length > 0)
+          ? flow.top_features.slice(0, 3).map(f => {
+              const fname = f[0];
+              const zval = typeof f[1] === 'number' ? `+${f[1].toFixed(1)}σ` : f[1];
+              return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-800/80 text-[10px] font-mono text-slate-300 border border-white/10 whitespace-nowrap">
+                <span>${fname}</span>
+                <span class="text-rose-400 font-bold">${zval}</span>
+              </span>`;
+            }).join(' ')
+          : `<span class="text-[10px] font-mono text-slate-400">Baseline distribution features</span>`;
+
+        // Policy Reason
+        let policyReasonHtml = "";
+        if (action === 'BLOCK') {
+          policyReasonHtml = `
+            <div class="text-[11px] text-rose-400 dark:text-rose-300 font-sans leading-tight font-medium">
+              Score (${flow.score.toFixed(4)}) &ge; Cutoff (${cutoff.toFixed(4)}) &bull; ${!isBenignLabel ? rawLabel + ' Signature' : 'Zero-Day Drift'} (${similarity})
+            </div>
+            <div class="text-[10px] font-mono text-emerald-400 mt-1 font-bold flex items-center gap-1">
+              <i class="fa-solid fa-shield-halved text-[9px]"></i> Auto Netfilter Drop Applied
+            </div>
+          `;
+        } else if (action === 'MONITOR') {
+          policyReasonHtml = `
+            <div class="text-[11px] text-amber-500 dark:text-amber-300 font-sans leading-tight">
+              Score (${flow.score.toFixed(4)}) &ge; Cutoff (${cutoff.toFixed(4)}); borderline behavioral anomaly.
+            </div>
+            <div class="text-[10px] font-mono text-amber-400 mt-1">Queued for SOC Analyst</div>
+          `;
+        } else {
+          policyReasonHtml = `
+            <div class="text-[11px] text-emerald-600 dark:text-emerald-300 font-sans leading-tight">
+              Score (${flow.score.toFixed(4)}) &lt; Cutoff (${cutoff.toFixed(4)}); clean baseline flow.
+            </div>
+            <div class="text-[10px] font-mono text-slate-400 mt-1">Zero-Disruption Fast-Path</div>
+          `;
+        }
 
         tr.innerHTML = `
-          <td class="py-3 px-3 font-bold text-slate-800 dark:text-slate-200">#${flow.flow_id}</td>
-          <td class="py-3 px-3 font-bold ${flow.is_anomaly ? 'text-rose-500' : 'text-emerald-500'}">${flow.score.toFixed(5)}</td>
-          <td class="py-3 px-3 font-mono text-slate-400">${ratio}x cutoff</td>
-          <td class="py-3 px-3 text-slate-700 dark:text-slate-300">${topFeat}</td>
-          <td class="py-3 px-3 text-violet-400 font-bold">${techId}</td>
-          <td class="py-3 px-3"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${badgeClass}">${action}</span></td>
-          <td class="py-3 px-3 text-right">
-            <button class="csv-slowmo-trigger-btn px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-violet-600/20 text-violet-400 hover:bg-violet-600 hover:text-white border border-violet-500/30 transition flex items-center gap-1 ml-auto">
-              <i class="fa-solid fa-film text-[10px]"></i> Watch Slow-Mo
+          <td class="py-3.5 px-3">
+            <div class="font-bold text-slate-800 dark:text-slate-200">#${flow.flow_id}</div>
+            <span class="inline-block mt-1 px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase ${labelBadgeClass}">
+              ${rawLabel}
+            </span>
+          </td>
+          <td class="py-3.5 px-3 whitespace-nowrap">
+            <div class="font-bold text-sm ${scoreColorClass}">${flow.score.toFixed(5)}</div>
+            <div class="text-[10px] font-mono text-slate-400">${ratio}x cutoff (${cutoff})</div>
+          </td>
+          <td class="py-3.5 px-3">
+            <div class="font-bold text-violet-400">${techId}</div>
+            <div class="text-[10px] text-slate-400 truncate max-w-[150px]" title="${techName}">${techName}</div>
+            <div class="text-[9px] font-mono text-cyan-400">sim: ${similarity}</div>
+          </td>
+          <td class="py-3.5 px-4">
+            <div class="text-[11px] text-slate-800 dark:text-slate-100 font-sans font-medium mb-1.5 leading-snug">
+              <i class="fa-solid fa-quote-left text-[9px] text-violet-400 mr-1.5 opacity-70"></i>${expText}
+            </div>
+            <div class="flex flex-wrap gap-1.5 items-center">
+              <span class="text-[9px] font-mono uppercase text-slate-400 font-bold mr-1">Triggers:</span>
+              ${featureChips}
+            </div>
+          </td>
+          <td class="py-3.5 px-3">
+            ${policyReasonHtml}
+          </td>
+          <td class="py-3.5 px-3 whitespace-nowrap">
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm ${badgeClass}">${action}</span>
+          </td>
+          <td class="py-3.5 px-3 text-right whitespace-nowrap">
+            <button class="csv-slowmo-trigger-btn px-3 py-1.5 rounded-full text-[11px] font-mono font-bold bg-violet-600/20 text-violet-400 hover:bg-violet-600 hover:text-white border border-violet-500/30 transition flex items-center gap-1.5 ml-auto">
+              <i class="fa-solid fa-film text-[10px]"></i> Watch Journey
             </button>
           </td>
         `;
