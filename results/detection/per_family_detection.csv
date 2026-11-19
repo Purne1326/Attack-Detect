@@ -1,0 +1,31 @@
+model,label,n,flagged_mean,flagged_sd
+ae,BENIGN,279380,0.0102,0.0002
+ae,Bot,1437,0.0061,0.0137
+ae,DDoS,128014,0.5545,0.148
+ae,DoS GoldenEye,10282,0.3281,0.1451
+ae,DoS Hulk,172846,0.7395,0.1556
+ae,DoS Slowhttptest,5228,0.2188,0.0752
+ae,DoS slowloris,5374,0.6134,0.0194
+ae,FTP-Patator,5931,0.0006,0.0007
+ae,Heartbleed,11,0.9818,0.0407
+ae,Infiltration,36,0.75,0.1571
+ae,PortScan,1956,0.2167,0.0886
+ae,SSH-Patator,3219,0.0036,0.0028
+ae,Web Attack - Brute Force,1470,0.0,0.0
+ae,Web Attack - Sql Injection,21,0.0,0.0
+ae,Web Attack - XSS,652,0.0,0.0
+if,BENIGN,279380,0.0102,0.0001
+if,Bot,1437,0.0085,0.0071
+if,DDoS,128014,0.0,0.0
+if,DoS GoldenEye,10282,0.0002,0.0
+if,DoS Hulk,172846,0.0012,0.0006
+if,DoS Slowhttptest,5228,0.5484,0.0233
+if,DoS slowloris,5374,0.1176,0.1
+if,FTP-Patator,5931,0.0,0.0
+if,Heartbleed,11,0.9818,0.0407
+if,Infiltration,36,0.5611,0.1264
+if,PortScan,1956,0.018,0.0328
+if,SSH-Patator,3219,0.0,0.0
+if,Web Attack - Brute Force,1470,0.0,0.0
+if,Web Attack - Sql Injection,21,0.0,0.0
+if,Web Attack - XSS,652,0.0,0.0

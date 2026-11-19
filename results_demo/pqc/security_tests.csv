@@ -1,0 +1,36 @@
+mode,test,expected,result,reason,pass
+classical,valid handshake (control),accepted,accepted,ok,True
+classical,valid alert (control),accepted,accepted,ok,True
+classical,replayed alert,rejected,rejected,replay,True
+classical,modified ciphertext,rejected,rejected,decrypt_failed,True
+classical,modified header (counter),rejected,rejected,decrypt_failed,True
+classical,unsigned alert,rejected,rejected,unsigned,True
+classical,stale timestamp (delayed alert),rejected,rejected,stale_timestamp,True
+classical,alert signed with wrong key,rejected,rejected,bad_signature,True
+classical,handshake signed with wrong key,rejected,rejected,bad_signature,True
+classical,truncated message,rejected,rejected,malformed,True
+classical,unknown session,rejected,rejected,unknown_session,True
+hybrid,valid handshake (control),accepted,accepted,ok,True
+hybrid,valid alert (control),accepted,accepted,ok,True
+hybrid,replayed alert,rejected,rejected,replay,True
+hybrid,modified ciphertext,rejected,rejected,decrypt_failed,True
+hybrid,modified header (counter),rejected,rejected,decrypt_failed,True
+hybrid,unsigned alert,rejected,rejected,unsigned,True
+hybrid,stale timestamp (delayed alert),rejected,rejected,stale_timestamp,True
+hybrid,alert signed with wrong key,rejected,rejected,bad_signature,True
+hybrid,handshake signed with wrong key,rejected,rejected,bad_signature,True
+hybrid,truncated message,rejected,rejected,malformed,True
+hybrid,unknown session,rejected,rejected,unknown_session,True
+hybrid,downgrade to classical,rejected,rejected,mode_mismatch,True
+pq,valid handshake (control),accepted,accepted,ok,True
+pq,valid alert (control),accepted,accepted,ok,True
+pq,replayed alert,rejected,rejected,replay,True
+pq,modified ciphertext,rejected,rejected,decrypt_failed,True
+pq,modified header (counter),rejected,rejected,decrypt_failed,True
+pq,unsigned alert,rejected,rejected,unsigned,True
+pq,stale timestamp (delayed alert),rejected,rejected,stale_timestamp,True
+pq,alert signed with wrong key,rejected,rejected,bad_signature,True
+pq,handshake signed with wrong key,rejected,rejected,bad_signature,True
+pq,truncated message,rejected,rejected,malformed,True
+pq,unknown session,rejected,rejected,unknown_session,True
+pq,downgrade to classical,rejected,rejected,mode_mismatch,True

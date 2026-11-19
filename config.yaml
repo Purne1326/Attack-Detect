@@ -1,0 +1,59 @@
+# Attack Detective - ONE configuration file for the whole project.
+# All paths are relative to the project folder. Change values here, never inside the scripts.
+
+paths:
+  raw_dir: data/raw                       # the 8 CICIDS2017 CSV files go here
+  stix_path: data/attack/enterprise-attack.json
+  processed_dir: data/processed           # cleaned + scaled arrays (made by step 01)
+  artifacts_dir: artifacts                # models, indexes, jsonl hand-off files
+  results_dir: results                    # tables + figures for the report
+
+# ---------------------------------------------------------------- steps 01-05
+detection:
+  drop_columns: ["Destination Port", "Fwd Header Length.1"]   # port = identifier; .1 = duplicate
+  split: [0.70, 0.15, 0.15]               # benign train / val / test
+  split_seed: 42
+  benign_train_cap: null                  # set to 500000 if your laptop has 8 GB RAM
+  scaler_clip: 10.0
+  ae:
+    hidden: [64, 32, 16]
+    lr: 0.001
+    batch_size: 1024
+    epochs: 30
+    patience: 3                           # early stopping on validation loss
+  seeds: [0, 1, 2, 3, 4]                  # 5 runs -> mean +/- SD
+  percentiles: [95, 97, 99]               # threshold = percentile of benign validation error
+  main_percentile: 99
+  iforest:
+    n_estimators: 100
+    max_samples: 256
+    train_cap: 200000
+  explain:
+    top_k: 5
+    per_label_cap: 3000                   # flows per label written to explanations.jsonl
+    model_seed: 0
+
+# ---------------------------------------------------------------- steps 06-07
+attribution:
+  top_k: 3
+  main_method: tfidf                      # tfidf or minilm - choose the better one after step 07
+  main_enriched: true
+  random_baseline_runs: 20
+
+# ---------------------------------------------------------------- step 08
+policy:
+  high_multiplier: 1.5                    # BLOCK needs score >= high_multiplier x threshold
+  s_min: 0.05                             # ... and top-1 ATT&CK similarity >= s_min
+  max_benign_block_rate: 0.005            # tuning rule: at most 0.5% of benign flows blocked
+  tune_fraction: 0.5                      # half tunes the thresholds, the other half tests them
+  grid_high_multiplier: [1.5, 2, 3, 5, 10, 20]
+  grid_s_min: [0.0, 0.05, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5]
+
+# ---------------------------------------------------------------- steps 09-11
+pqc:
+  mode: hybrid                            # classical | hybrid | pq  (used by step 11 + dashboard)
+  backend: auto                           # auto | cryptography | liboqs | pure
+  allow_pure_python: false                # true ONLY if no native library works (slow; say so in report)
+  replay_window_seconds: 30
+  bench_runs: 200                         # repetitions per operation (at least 100)
+  bench_alerts: 500

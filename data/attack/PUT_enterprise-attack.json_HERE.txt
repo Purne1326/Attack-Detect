@@ -1,0 +1,2 @@
+Download enterprise-attack.json here (see guide step 3):
+https://raw.githubusercontent.com/mitre-attack/attack-stix-data/master/enterprise-attack/enterprise-attack.json

@@ -1,0 +1,13 @@
+algorithm,backend,operation,mean_ms,sd_ms,public_key_B,ct_or_sig_B
+X25519,cryptography,keygen,0.1011,0.0384,32,32
+X25519,cryptography,encapsulate,0.1949,0.0692,32,32
+X25519,cryptography,decapsulate,0.0871,0.0258,32,32
+ML-KEM-768,cryptography,keygen,0.5277,0.18,1184,1088
+ML-KEM-768,cryptography,encapsulate,0.1968,0.1241,1184,1088
+ML-KEM-768,cryptography,decapsulate,0.1905,0.1823,1184,1088
+Ed25519,cryptography,keygen,0.1285,0.0954,32,64
+Ed25519,cryptography,sign,0.1259,0.1111,32,64
+Ed25519,cryptography,verify,0.3448,0.192,32,64
+ML-DSA-65,cryptography,keygen,0.7068,0.6245,1952,3309
+ML-DSA-65,cryptography,sign,2.6351,2.07,1952,3309
+ML-DSA-65,cryptography,verify,0.5227,0.1651,1952,3309

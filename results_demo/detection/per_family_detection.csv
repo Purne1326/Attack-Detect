@@ -1,0 +1,9 @@
+model,label,n,flagged_mean,flagged_sd
+ae,BENIGN,3888,0.0116,0.0007
+ae,DDoS,1493,1.0,0.0
+ae,PortScan,1499,0.8759,0.0104
+ae,Web Attack - Brute Force,398,0.3065,0.0
+if,BENIGN,3888,0.0102,0.0024
+if,DDoS,1493,0.0174,0.0047
+if,PortScan,1499,0.0183,0.0014
+if,Web Attack - Brute Force,398,0.0088,0.0018

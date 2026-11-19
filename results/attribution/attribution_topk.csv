@@ -1,0 +1,6 @@
+config,n,top1,top3
+minilm_enriched,6837,0.0683,0.4243
+minilm_plain,6837,0.1242,0.5867
+tfidf_enriched,6837,0.1966,0.6104
+tfidf_plain,6837,0.2001,0.2526
+random,6837,0.0094,0.0282

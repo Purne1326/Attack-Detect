@@ -1,0 +1,13 @@
+config,label,n,top1,top3
+minilm_enriched,DDoS,1493,0.1701,0.9953
+minilm_enriched,PortScan,1302,0.0,0.0023
+minilm_enriched,Web Attack - Brute Force,122,0.0,0.0
+minilm_plain,DDoS,1493,0.3054,0.99
+minilm_plain,PortScan,1302,0.0,0.0
+minilm_plain,Web Attack - Brute Force,122,0.0,0.0
+tfidf_enriched,DDoS,1493,1.0,1.0
+tfidf_enriched,PortScan,1302,0.8418,0.9693
+tfidf_enriched,Web Attack - Brute Force,122,0.0,0.0
+tfidf_plain,DDoS,1493,0.2237,0.9571
+tfidf_plain,PortScan,1302,0.0,0.0
+tfidf_plain,Web Attack - Brute Force,122,0.0,0.0082

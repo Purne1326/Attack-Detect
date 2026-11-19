@@ -1,0 +1,33 @@
+# Virtual Environment & Python cache
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# User-created PNG diagrams & visualizations (per user request)
+*.png
+*.jpg
+*.jpeg
+*.svg
+
+# Raw and large datasets (>100MB files blocked by GitHub)
+raw/
+data/raw/
+data/raw_demo/
+data/processed/*.npy
+data/processed_demo/*.npy
+data/attack/*.json
+
+# Archives & Temporary Artifacts
+*.zip
+*.tar.gz
+*.pdf
+report_tables.html
+math_img/
+scratch/
+.edge_temp/
+.mpl_temp/

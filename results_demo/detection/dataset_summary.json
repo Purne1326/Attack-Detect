@@ -1,0 +1,29 @@
+{
+  "raw_rows": 30000,
+  "dropped_non_numeric_columns": [],
+  "after_inf_nan": 29909,
+  "after_duplicates": 29310,
+  "n_features": 76,
+  "label_counts": {
+    "BENIGN": 25920,
+    "PortScan": 1499,
+    "DDoS": 1493,
+    "Web Attack - Brute Force": 398
+  },
+  "train_rows": 18144,
+  "val_rows": 3888,
+  "test_rows": 7278,
+  "features_used": 66,
+  "dropped_constant_columns": [
+    "Bwd PSH Flags",
+    "Fwd URG Flags",
+    "Bwd URG Flags",
+    "CWE Flag Count",
+    "Fwd Avg Bytes/Bulk",
+    "Fwd Avg Packets/Bulk",
+    "Fwd Avg Bulk Rate",
+    "Bwd Avg Bytes/Bulk",
+    "Bwd Avg Packets/Bulk",
+    "Bwd Avg Bulk Rate"
+  ]
+}

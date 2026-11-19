@@ -1,0 +1,3 @@
+policy,high_multiplier,s_min,benign_allow,benign_monitor,benign_block,attack_allow,attack_monitor,attack_block
+config.yaml values,3.0,0.15,0.9906,0.0094,0.0,0.1419,0.4168,0.4413
+tuned,1.5,0.05,0.9906,0.0081,0.0013,0.1419,0.1874,0.6708

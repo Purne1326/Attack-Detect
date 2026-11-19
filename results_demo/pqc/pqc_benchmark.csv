@@ -1,0 +1,4 @@
+mode,keygen_ms,handshake_send_ms,handshake_send_sd,handshake_recv_ms,handshake_recv_sd,seal_ms,seal_sd,open_ms,open_sd,added_latency_ms,handshake_bytes,alert_bytes,plaintext_bytes,overhead_bytes,alerts_per_s
+classical,0.195,0.3377,0.0983,0.4666,0.1258,0.1674,0.0798,0.3297,0.0746,0.4971,162,657,447,210,1773.0283
+hybrid,1.4164,3.4718,2.1159,1.2322,0.3107,2.99,1.5166,0.8921,0.2363,3.882,4564,3965,447,3518,256.7229
+pq,1.3965,2.5203,1.4991,0.7994,0.2483,3.1614,2.3371,0.887,0.1259,4.0483,4456,3895,447,3448,301.6041

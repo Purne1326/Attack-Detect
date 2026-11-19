@@ -1,0 +1,14 @@
+{
+  "mode": "hybrid",
+  "alerts": 29583,
+  "accepted": 29583,
+  "handshake_bytes": 4564,
+  "mean_alert_bytes": 3996.0087888314233,
+  "seconds": 113.54304619999311,
+  "alerts_per_second": 260.5443573170736,
+  "firewall": {
+    "ALLOW": 22688,
+    "MONITOR": 1881,
+    "BLOCK": 5014
+  }
+}
