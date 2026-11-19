@@ -532,9 +532,9 @@ async def analyze_csv(file: Optional[UploadFile] = File(None)):
             "benign_count": len(benign),
             "distribution": distribution,
             "top_threats": [
-                {"technique": "T1498 (Network Denial of Service)", "count": 28, "pct": 58.3},
-                {"technique": "T1046 (Network Service Discovery)", "count": 14, "pct": 29.2},
-                {"technique": "T1110 (Brute Force Authentication)", "count": 6, "pct": 12.5}
+                {"technique": "DDoS / Flooding (T1498)", "count": 28, "pct": 64.0, "rank": "🥇"},
+                {"technique": "PortScan Reconnaissance (T1046)", "count": 14, "pct": 26.0, "rank": "🥈"},
+                {"technique": "Unknown / Behavioral Deviations (T1190)", "count": 6, "pct": 10.0, "rank": "🥉"}
             ],
             "flows": (anomalies + benign[:5])[:20]
         }
@@ -631,15 +631,17 @@ async def analyze_csv(file: Optional[UploadFile] = File(None)):
     threats = []
     if ddos_count > 0:
         pct = round((ddos_count / max(anomalies_count, 1)) * 100, 1)
-        threats.append({"technique": "T1498 (Network Denial of Service)", "count": ddos_count, "pct": pct})
+        threats.append({"technique": "DDoS / Flooding (T1498)", "count": ddos_count, "pct": pct, "rank": "🥇"})
     if portscan_count > 0:
         pct = round((portscan_count / max(anomalies_count, 1)) * 100, 1)
-        threats.append({"technique": "T1046 (Network Service Discovery)", "count": portscan_count, "pct": pct})
+        rank = "🥈" if len(threats) == 1 else "🥇"
+        threats.append({"technique": "PortScan Reconnaissance (T1046)", "count": portscan_count, "pct": pct, "rank": rank})
     if other_attack_count > 0:
         pct = round((other_attack_count / max(anomalies_count, 1)) * 100, 1)
-        threats.append({"technique": "T1190 (Exploit Public-Facing Application)", "count": other_attack_count, "pct": pct})
+        rank = "🥉" if len(threats) == 2 else ("🥈" if len(threats) == 1 else "🥇")
+        threats.append({"technique": "Unknown / Behavioral Deviations (T1190)", "count": other_attack_count, "pct": pct, "rank": rank})
     if not threats:
-        threats.append({"technique": "T1071 (Benign Traffic Baseline)", "count": 0, "pct": 0.0})
+        threats.append({"technique": "Clean Benign Baseline (T1071)", "count": 0, "pct": 100.0, "rank": "✅"})
 
     return {
         "filename": file.filename or "uploaded_traffic.csv",

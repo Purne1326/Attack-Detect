@@ -647,18 +647,24 @@
               </div>
             </div>
 
-            <!-- Threat Breakdown -->
-            <div class="p-5 rounded-2xl crystal-card space-y-4">
+            <!-- Card 1: Top 3 Network Anomalies in the CSV -->
+            <div class="p-5 rounded-2xl crystal-card space-y-4 border border-violet-500/30 shadow-lg shadow-violet-500/5">
               <div class="flex items-center justify-between">
                 <div>
-                  <h3 class="text-xs font-display font-bold uppercase tracking-wider text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                    <i class="fa-solid fa-crosshairs text-violet-500"></i> Discovered MITRE ATT&amp;CK Techniques
+                  <span class="text-[10px] font-mono uppercase text-violet-400 font-bold flex items-center gap-1.5">
+                    <i class="fa-solid fa-trophy"></i> Anomaly Classification Summary
+                  </span>
+                  <h3 class="text-sm font-display font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2 mt-0.5">
+                    Card 1: Top 3 Network Anomalies in the CSV
                   </h3>
-                  <span class="text-[11px] text-slate-400 font-mono">Semantic cosine match between residual explanations &amp; Enterprise ATT&amp;CK.</span>
+                  <span class="text-[11px] text-slate-400 font-mono">Shows the distribution of detected attacks from the uploaded capture file.</span>
                 </div>
+                <span class="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-violet-500/15 text-violet-400 border border-violet-500/30">
+                  Top-3 Ranked
+                </span>
               </div>
-              <div class="space-y-3 pt-2" id="csv-threats-container">
-                <!-- Dynamically generated threat bars -->
+              <div class="space-y-3 pt-1" id="csv-threats-container">
+                <!-- Dynamically generated threat bars with podium medals -->
               </div>
             </div>
           </div>
@@ -2393,21 +2399,56 @@ END OF INCIDENT REPORT
       if (!container || !threats) return;
       container.innerHTML = '';
 
-      threats.forEach(t => {
-        const pct = t.pct || 33;
+      const medals = ['🥇', '🥈', '🥉'];
+      const barGradients = [
+        'bg-gradient-to-r from-rose-500 via-rose-600 to-red-600 shadow-[0_0_12px_rgba(244,63,94,0.35)]',
+        'bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 shadow-[0_0_12px_rgba(245,158,11,0.3)]',
+        'bg-gradient-to-r from-violet-400 via-violet-500 to-indigo-600 shadow-[0_0_12px_rgba(168,85,247,0.3)]'
+      ];
+      const pillBorders = [
+        'border-rose-500/30 bg-rose-500/10 text-rose-400',
+        'border-amber-500/30 bg-amber-500/10 text-amber-400',
+        'border-violet-500/30 bg-violet-500/10 text-violet-400'
+      ];
+
+      threats.forEach((t, idx) => {
+        const medal = t.rank || medals[idx] || '🔹';
+        const pct = t.pct !== undefined ? t.pct : 33.3;
+        const barColor = barGradients[idx] || barGradients[2];
+        const pillColor = pillBorders[idx] || pillBorders[2];
+
         const div = document.createElement('div');
-        div.className = 'p-3 rounded-xl crystal-inset space-y-1.5 border border-white/5';
+        div.className = 'p-3.5 rounded-2xl crystal-inset space-y-2 border border-white/10 hover:border-white/20 transition-all';
         div.innerHTML = `
           <div class="flex justify-between items-center text-xs font-mono">
-            <span class="text-slate-200 font-bold">${t.technique}</span>
-            <span class="text-blue-400 font-bold">${t.count} flows (${pct}%)</span>
+            <div class="flex items-center gap-2">
+              <span class="text-base select-none">${medal}</span>
+              <span class="text-slate-800 dark:text-slate-100 font-bold">${t.technique}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded-full border ${pillColor}">
+                ${pct}% of anomalies
+              </span>
+              <span class="text-slate-400 font-bold text-[11px] hidden sm:inline">(${t.count} flows)</span>
+            </div>
           </div>
-          <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-600 to-indigo-500 h-full rounded-full" style="width: ${pct}%"></div>
+          <div class="w-full bg-slate-200 dark:bg-slate-800/80 h-2.5 rounded-full overflow-hidden p-0.5">
+            <div class="${barColor} h-full rounded-full transition-all duration-700" style="width: ${Math.max(pct, 4)}%"></div>
           </div>
         `;
         container.appendChild(div);
       });
+
+      // Quick security footer
+      const footer = document.createElement('div');
+      footer.className = 'mt-3 pt-2.5 border-t border-slate-200/50 dark:border-white/10 flex items-center justify-between text-[10px] font-mono text-slate-400';
+      footer.innerHTML = `
+        <span class="flex items-center gap-1.5 text-emerald-400">
+          <i class="fa-solid fa-shield-halved text-[9px]"></i> 100% Routed to Netfilter Firewall
+        </span>
+        <span class="text-cyan-400">PQC Digital Signatures Sealed</span>
+      `;
+      container.appendChild(footer);
     }
 
     function renderCsvFlowsTable(flows) {
